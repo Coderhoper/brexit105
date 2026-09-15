@@ -16,10 +16,12 @@ export default function Login() {
 
     try {
       const res = await api.post('/api/auth/login', { email, password })
-      const { token } = res.data
+      const { token, user } = res.data
 
       localStorage.setItem('token', token)
+      localStorage.setItem('user', JSON.stringify(user))
       setAuthToken(token)
+      window.dispatchEvent(new Event('session:updated'))
       navigate('/')
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed')

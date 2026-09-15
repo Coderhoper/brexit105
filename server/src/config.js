@@ -16,7 +16,7 @@ function loadEnv() {
   }
 
   if (!process.env.DATABASE_URL) {
-    process.env.DATABASE_URL = 'postgresql://database_dan:eUbsKVEmdMrUJOv9UeTEl2PJp14v0MiZ@dpg-dajrb3qd0e5s73deq8f0-a.oregon-postgres.render.com/db_001_init_sql';
+    process.env.DATABASE_URL = 'postgres://danlu:danlu@localhost:5432/danlu_db';
   }
 
   if (!process.env.JWT_SECRET) {

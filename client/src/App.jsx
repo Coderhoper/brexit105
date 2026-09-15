@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { NavLink, Route, Routes } from 'react-router-dom'
 import Login from './pages/Login'
 import Register from './pages/Register'
@@ -11,6 +11,8 @@ import Workers from './pages/Workers'
 import Expenses from './pages/Expenses'
 import Salaries from './pages/Salaries'
 import Reports from './pages/Reports'
+import Settings from './pages/Settings'
+import AuditLogs from './pages/AuditLogs'
 import ProtectedRoute from './components/ProtectedRoute'
 import { getStoredUser } from './api'
 
@@ -23,7 +25,9 @@ const navLinks = [
   { to: '/stock-movements', label: 'Stock' },
   { to: '/workers', label: 'Workers' },
   { to: '/expenses', label: 'Expenses' },
-  { to: '/salaries', label: 'Salaries' }
+  { to: '/salaries', label: 'Salaries' },
+  { to: '/settings', label: 'Settings', ownerOnly: true },
+  { to: '/audit-logs', label: 'Audit Logs', ownerOnly: true }
 ]
 
 const navItem = ({ to, label }) => (
@@ -35,7 +39,14 @@ const navItem = ({ to, label }) => (
 export default function App() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [darkMode, setDarkMode] = useState(() => localStorage.getItem('theme') === 'dark')
-  const user = useMemo(() => getStoredUser(), [])
+  const [user, setUser] = useState(() => getStoredUser())
+
+  useEffect(() => {
+    const syncUser = () => setUser(getStoredUser())
+    syncUser()
+    window.addEventListener('session:updated', syncUser)
+    return () => window.removeEventListener('session:updated', syncUser)
+  }, [])
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', darkMode)
@@ -45,6 +56,7 @@ export default function App() {
   const handleLogout = () => {
     localStorage.removeItem('token')
     localStorage.removeItem('user')
+    window.dispatchEvent(new Event('session:updated'))
     window.location.href = '/login'
   }
 
@@ -63,9 +75,11 @@ export default function App() {
           </div>
 
           <nav className="hidden items-center gap-2 md:flex">
-            {navLinks.map((link) => (
-              <React.Fragment key={link.to}>{navItem(link)}</React.Fragment>
-            ))}
+            {navLinks
+              .filter((link) => !link.ownerOnly || isOwner)
+              .map((link) => (
+                <React.Fragment key={link.to}>{navItem(link)}</React.Fragment>
+              ))}
           </nav>
 
           <div className="flex items-center gap-3">
@@ -89,20 +103,22 @@ export default function App() {
         {menuOpen && (
           <div className="border-t border-slate-200 bg-white px-4 py-3 dark:border-slate-800 dark:bg-slate-900 md:hidden">
             <div className="flex flex-col gap-2">
-              {navLinks.map((link) => (
-                <NavLink
-                  key={link.to}
-                  to={link.to}
-                  onClick={() => setMenuOpen(false)}
-                  className={({ isActive }) =>
-                    `rounded-xl px-3 py-2 text-sm font-medium ${
-                      isActive ? 'bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900' : 'text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800'
-                    }`
-                  }
-                >
-                  {link.label}
-                </NavLink>
-              ))}
+              {navLinks
+                .filter((link) => !link.ownerOnly || isOwner)
+                .map((link) => (
+                  <NavLink
+                    key={link.to}
+                    to={link.to}
+                    onClick={() => setMenuOpen(false)}
+                    className={({ isActive }) =>
+                      `rounded-xl px-3 py-2 text-sm font-medium ${
+                        isActive ? 'bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900' : 'text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800'
+                      }`
+                    }
+                  >
+                    {link.label}
+                  </NavLink>
+                ))}
               <button onClick={handleLogout} className="mt-2 btn btn-danger w-full">
                 Logout
               </button>
@@ -124,6 +140,8 @@ export default function App() {
           <Route path="/workers" element={<ProtectedRoute><Workers /></ProtectedRoute>} />
           <Route path="/expenses" element={<ProtectedRoute><Expenses /></ProtectedRoute>} />
           <Route path="/salaries" element={<ProtectedRoute><Salaries /></ProtectedRoute>} />
+          <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+          <Route path="/audit-logs" element={<ProtectedRoute><AuditLogs /></ProtectedRoute>} />
         </Routes>
       </main>
     </div>
