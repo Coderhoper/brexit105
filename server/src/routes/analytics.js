@@ -63,9 +63,9 @@ router.get('/pnl', requireAuth, async (req, res) => {
       [startDate, endDate]
     );
 
-    const total_sales = parseFloat(salesRes.rows[0].total_sales || 0);
-    const expenses = parseFloat(expensesRes.rows[0].expenses || 0);
-    const cogs = parseFloat(cogsRes.rows[0].cogs || 0);
+    const total_sales = parseFloat(salesRes?.rows?.[0]?.total_sales || 0);
+    const expenses = parseFloat(expensesRes?.rows?.[0]?.expenses || 0);
+    const cogs = parseFloat(cogsRes?.rows?.[0]?.cogs || 0);
     const expected_profit = total_sales - cogs;
     const actual_net_profit = expected_profit - expenses;
 
