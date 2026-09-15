@@ -13,8 +13,8 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
-// List all products
-router.get('/', async (req, res) => {
+// List all products - staff can view, owners can manage
+router.get('/', requireAuth, async (req, res) => {
   try {
     const q = await db.query('SELECT * FROM products ORDER BY product_name');
     return res.json({ products: q.rows });

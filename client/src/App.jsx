@@ -11,6 +11,9 @@ import Workers from './pages/Workers'
 import Expenses from './pages/Expenses'
 import Salaries from './pages/Salaries'
 import Reports from './pages/Reports'
+import SalesHistory from './pages/SalesHistory'
+import Receipts from './pages/Receipts'
+import Customers from './pages/Customers'
 import Settings from './pages/Settings'
 import AuditLogs from './pages/AuditLogs'
 import ProtectedRoute from './components/ProtectedRoute'
@@ -19,13 +22,16 @@ import { getStoredUser } from './api'
 const navLinks = [
   { to: '/', label: 'Dashboard' },
   { to: '/products', label: 'Products' },
-  { to: '/reports', label: 'Reports' },
   { to: '/pos', label: 'POS' },
-  { to: '/purchases', label: 'Purchases' },
-  { to: '/stock-movements', label: 'Stock' },
-  { to: '/workers', label: 'Workers' },
-  { to: '/expenses', label: 'Expenses' },
-  { to: '/salaries', label: 'Salaries' },
+  { to: '/sales-history', label: 'Sales History' },
+  { to: '/receipts', label: 'Receipts' },
+  { to: '/customers', label: 'Customers' },
+  { to: '/reports', label: 'Reports' },
+  { to: '/purchases', label: 'Purchases', ownerOnly: true },
+  { to: '/stock-movements', label: 'Stock', ownerOnly: true },
+  { to: '/workers', label: 'Workers', ownerOnly: true },
+  { to: '/expenses', label: 'Expenses', ownerOnly: true },
+  { to: '/salaries', label: 'Salaries', ownerOnly: true },
   { to: '/settings', label: 'Settings', ownerOnly: true },
   { to: '/audit-logs', label: 'Audit Logs', ownerOnly: true }
 ]
@@ -134,9 +140,12 @@ export default function App() {
           <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
           <Route path="/products" element={<ProtectedRoute><Products /></ProtectedRoute>} />
           <Route path="/pos" element={<ProtectedRoute><POS /></ProtectedRoute>} />
+          <Route path="/sales-history" element={<ProtectedRoute><SalesHistory /></ProtectedRoute>} />
+          <Route path="/receipts" element={<ProtectedRoute><Receipts /></ProtectedRoute>} />
+          <Route path="/customers" element={<ProtectedRoute><Customers /></ProtectedRoute>} />
+          <Route path="/reports" element={<ProtectedRoute><Reports /></ProtectedRoute>} />
           <Route path="/purchases" element={<ProtectedRoute><Purchases /></ProtectedRoute>} />
           <Route path="/stock-movements" element={<ProtectedRoute><StockMovements /></ProtectedRoute>} />
-          <Route path="/reports" element={<ProtectedRoute><Reports /></ProtectedRoute>} />
           <Route path="/workers" element={<ProtectedRoute><Workers /></ProtectedRoute>} />
           <Route path="/expenses" element={<ProtectedRoute><Expenses /></ProtectedRoute>} />
           <Route path="/salaries" element={<ProtectedRoute><Salaries /></ProtectedRoute>} />

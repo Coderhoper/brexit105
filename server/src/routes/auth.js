@@ -16,12 +16,12 @@ router.post('/register', async (req, res) => {
       return res.status(400).json({ message: 'name, email and password are required' });
     }
 
-    // If creating an owner, enforce max 3 owners
+    // If creating an owner, enforce max 2 owners
     if (role === 'owner') {
       const ownerCountRes = await db.query('SELECT COUNT(*) FROM users WHERE role = $1', ['owner']);
       const ownerCount = parseInt(ownerCountRes.rows[0].count, 10);
-      if (ownerCount >= 3) {
-        return res.status(403).json({ message: 'Owner limit reached (max 3)' });
+      if (ownerCount >= 2) {
+        return res.status(403).json({ message: 'Owner limit reached (max 2)' });
       }
     }
 

@@ -42,6 +42,20 @@ describe('Auth routes', () => {
     expect(res.body.token).toBeDefined()
   })
 
+  test('rejects creating more than two owners', async () => {
+    const db = require('../src/db')
+    db.query.mockImplementation((text) => {
+      if (text.includes('COUNT(*) FROM users WHERE role')) {
+        return Promise.resolve({ rows: [{ count: '2' }] })
+      }
+      return Promise.resolve({ rows: [] })
+    })
+
+    const res = await request(app).post('/api/auth/register').send({ name: 'Third', email: 'third@example.com', password: 'pass123', role: 'owner' })
+    expect(res.statusCode).toBe(403)
+    expect(res.body.message).toMatch(/Owner limit reached/i)
+  })
+
   test('initializeDatabase creates the required schema when tables are missing', async () => {
     await expect(initializeDatabase()).resolves.toBeTruthy()
   })

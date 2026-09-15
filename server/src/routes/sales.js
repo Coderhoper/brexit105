@@ -29,7 +29,8 @@ router.get('/:id', requireAuth, async (req, res) => {
 });
 
 // Create a sale with items, deduct stock in a transaction
-router.post('/', requireAuth, requireRole('owner'), async (req, res) => {
+// staff users are allowed to record sales but not to manage products or settings
+router.post('/', requireAuth, requireRole('sales'), async (req, res) => {
   const client = await db.pool.connect();
   try {
     const { items, payment_method } = req.body;
